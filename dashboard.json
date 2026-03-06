@@ -69,7 +69,7 @@
                 "field":"NUTS 3 Region",
                 "type":"nominal",
                 "legend":null,
-                "sort":{"op":"sum","field":"GVA","order":"descending"}  // largest at bottom
+                "sort":{"op":"sum","field":"GVA","order":"descending"}  
               },
               "tooltip":[
                 {"field":"Year","type":"ordinal"},
