@@ -1,0 +1,181 @@
+ {
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "title": {
+      "text": "Irish Economic Dashboard",
+      "fontSize": 22
+    },
+    "config": {
+      "view": {"stroke": null},
+      "axis": {"labelFontSize": 11},
+      "mark": {"tooltip": true}
+    },
+    "data": {
+      "url": "https://raw.githubusercontent.com/ryaneyan/info_vis/main/aggregated_data.csv"
+    },
+    "params": [
+      {
+        "name": "yearSelect",
+        "value": 2024,
+        "bind": {
+          "input": "range",
+          "min": 2000,
+          "max": 2024,
+          "step": 1,
+          "name": "Year: "
+        }
+      },
+      {
+        "name": "viewToggle",
+        "value": "Sector",
+        "bind": {
+          "input": "radio",
+          "options": ["Ireland","Region","Sector"]
+        }
+      }
+    ],
+    "vconcat": [
+      {
+    "hconcat": [
+      {
+        "title": "Percentage of Economy by Sector/Region",
+        "width": 450,
+        "layer":[
+          {
+            "transform":[{"filter":"viewToggle == 'Sector' && datum['NUTS 3 Region'] == 'Ireland' && datum.SectorAgg != 'All Sectors'"}],
+            "mark":{"type":"area","tooltip":true},
+            "encoding":{
+              "x":{"field":"Year","type":"ordinal"},
+              "y":{"aggregate":"sum","field":"GVA","stack":"normalize","title":"% of Economy"},
+              "color":{
+                "field":"SectorAgg",
+                "type":"nominal",
+                "legend":null,
+                "sort":{"op":"sum","field":"GVA","order":"ascending"}  
+              },
+              "tooltip":[
+                {"field":"Year","type":"ordinal"},
+                {"field":"SectorAgg","type":"nominal","title":"Sector"},
+                {"field":"GVA","type":"quantitative","title":"GVA (€ million)"}
+              ]
+            }
+          },
+          {
+            "transform":[{"filter":"viewToggle == 'Region' && datum.SectorAgg == 'All Sectors' && datum['NUTS 3 Region'] != 'Ireland'"}],
+            "mark":{"type":"area","tooltip":true},
+            "encoding":{
+              "x":{"field":"Year","type":"ordinal"},
+              "y":{"aggregate":"sum","field":"GVA","stack":"normalize","title":"% of Economy"},
+              "color":{
+                "field":"NUTS 3 Region",
+                "type":"nominal",
+                "legend":null,
+                "sort":{"op":"sum","field":"GVA","order":"descending"}  // largest at bottom
+              },
+              "tooltip":[
+                {"field":"Year","type":"ordinal"},
+                {"field":"NUTS 3 Region","type":"nominal","title":"Region"},
+                {"field":"GVA","type":"quantitative","title":"GVA (€ million)"}
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Total GVA Over Time",
+        "width": 450,
+        "layer": [
+          {
+            "transform": [
+              {"filter":"viewToggle == 'Ireland' && datum['NUTS 3 Region'] == 'Ireland' && datum.SectorAgg == 'All Sectors'"}
+            ],
+            "mark": {"type":"line","point":{"filled":true,"size":50},"tooltip":true},
+            "encoding": {
+              "x":{"field":"Year","type":"ordinal"},
+              "y":{"aggregate":"sum","field":"GVA","title":"Total GVA (€ million)"},
+              "color":{"value":"steelblue"},
+              "tooltip":[
+                {"field":"Year","type":"ordinal"},
+                {"field":"GVA","type":"quantitative","title":"GVA (€ million)"}
+              ]
+            }
+          },
+          {
+            "transform":[{"filter":"viewToggle == 'Region' && datum.SectorAgg == 'All Sectors'"}],
+            "mark":{"type":"line","point":true,"interpolate":"monotone","tooltip":true},
+            "encoding":{
+              "x":{"field":"Year","type":"ordinal"},
+              "y":{"aggregate":"sum","field":"GVA","title":"Total GVA (€ million)"},
+              "color":{"field":"NUTS 3 Region","type":"nominal","title":"Region","legend":{"orient":"right"}},
+              "tooltip":[
+                {"field":"Year","type":"ordinal"},
+                {"field":"NUTS 3 Region","type":"nominal","title":"Region"},
+                {"field":"GVA","type":"quantitative","title":"GVA (€ million)"}
+              ]
+            }
+          },
+          {
+            "transform":[{"filter":"viewToggle == 'Sector' && datum['NUTS 3 Region'] == 'Ireland' && datum.SectorAgg != 'All Sectors'"}],
+            "mark":{"type":"line","point":true,"interpolate":"monotone","tooltip":true},
+            "encoding":{
+              "x":{"field":"Year","type":"ordinal"},
+              "y":{"aggregate":"sum","field":"GVA","title":"Total GVA (€ million)"},
+              "color":{"field":"SectorAgg","type":"nominal","title":"Sector","legend":{"orient":"right"}},
+              "tooltip":[
+                {"field":"Year","type":"ordinal"},
+                {"field":"SectorAgg","type":"nominal","title":"Sector"},
+                {"field":"GVA","type":"quantitative","title":"GVA (€ million)"}
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+      {
+    "hconcat": [
+      {
+        "title": {"text":"Productivity vs Employment","subtitle":"Bubble size represents economic output (GVA)"},
+        "width":400,"height":300,
+        "transform":[{"filter":"datum.Year == yearSelect"},{"filter":"datum['NUTS 3 Region'] == 'Ireland'"},{"filter":"datum.SectorAgg != 'All Sectors'"}],
+        "mark":{"type":"circle","opacity":0.8,"tooltip":true},
+        "encoding":{
+          "x":{"field":"PersonsAtWork","type":"quantitative","title":"Employment (thousands)"},
+          "y":{"field":"Productivity","type":"quantitative","title":"Productivity (€ per worker)"},
+          "size":{
+            "field":"GVA","type":"quantitative","title":"Economic Size (€ million)",
+            "legend":{"orient":"right"} 
+          },
+          "color":{"field":"SectorAgg","type":"nominal","scale":{"scheme":"tableau10"},"legend":null},
+          "tooltip":[
+            {"field":"SectorAgg","type":"nominal","title":"Sector"},
+            {"field":"PersonsAtWork","type":"quantitative","title":"Employment (thousands)"},
+            {"field":"Productivity","type":"quantitative","title":"Productivity (€ per worker)"},
+            {"field":"GVA","type":"quantitative","title":"GVA (€ million)"}
+          ]
+        }
+      },
+      {
+        "title":"Employment by Sector",
+        "width":400,"height":300,
+        "transform":[{"filter":"datum.Year == yearSelect"},{"filter":"datum['NUTS 3 Region'] == 'Ireland'"},{"filter":"datum.SectorAgg != 'All Sectors'"}],
+        "mark":{"type":"bar","tooltip":true},
+        "encoding":{
+          "y":{"field":"SectorAgg","type":"nominal","title":"Sector","sort":"-x","axis":{"labelAngle":0}},
+          "x":{"aggregate":"sum","field":"PersonsAtWork","title":"Persons at Work (thousands)"},
+          "color":{"field":"SectorAgg","type":"nominal","title":"Sector","scale":{"scheme":"tableau10"},"legend":{"orient":"right"}},
+          "tooltip":[
+            {"field":"SectorAgg","type":"nominal","title":"Sector"},
+            {"field":"PersonsAtWork","type":"quantitative","title":"Employment (thousands)"}
+          ]
+        },
+        "config":{"view":{"stroke":null}}
+      }
+    ],
+    "resolve": {
+      "scale": {"color": "independent"},
+      "legend": {"size": "independent"}   
+    }
+  }
+    ],
+    "resolve":{"scale":{"color":"independent"}}
+  }
