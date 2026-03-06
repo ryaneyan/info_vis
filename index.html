@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Irish Economic Dashboard</title>
 
+  <!-- Vega libraries -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
@@ -24,42 +25,41 @@
       font-weight: 600;
     }
 
+    /* Center and style Vega-Lite controls */
     .vega-bindings {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      padding: 18px;
-      margin-bottom: 25px;
+      gap: 14px;
+      padding: 20px;
+      margin: 0 auto 30px auto;
       background: white;
       border-radius: 10px;
       border: 1px solid #ddd;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      max-width: 600px;
     }
 
     /* Slider styling */
-    input[type="range"] {
+    .vega-bindings input[type="range"] {
       width: 350px;
       accent-color: #0077cc;
       cursor: pointer;
+      height: 6px;
+      border-radius: 5px;
     }
 
     /* Radio buttons */
-    input[type="radio"] {
+    .vega-bindings input[type="radio"] {
       accent-color: #0077cc;
       margin-right: 6px;
       cursor: pointer;
     }
 
-    /* Radio label spacing */
+    /* Label spacing */
     .vega-bindings label {
-      margin-right: 10px;
-      font-weight: 500;
-    }
-    .vega-bindings div {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
+      font-weight: 600;
+      margin-right: 6px;
     }
 
     #vis {
